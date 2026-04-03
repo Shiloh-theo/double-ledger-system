@@ -1,14 +1,8 @@
 package theo.bank.ledger.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -21,10 +15,14 @@ public class Transactions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int transactionId;
-    LocalDate date;
-    LocalTime time;
-    String senderAccount;
-    String receiverAccount;
-    double amount;
+    private int transactionId;
+
+    private LocalDate date;
+    private LocalTime time;
+
+    private String senderAccount;
+    private String receiverAccount;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal amount;    // BigDecimal — not double
 }

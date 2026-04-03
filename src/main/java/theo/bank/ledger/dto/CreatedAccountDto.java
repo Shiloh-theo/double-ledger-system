@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,7 +20,7 @@ public class CreatedAccountDto {
     String password;
     String transactionPin;
     String accountNo;
-    double balance;
+    BigDecimal balance;
     int CustomerId;
 
 }

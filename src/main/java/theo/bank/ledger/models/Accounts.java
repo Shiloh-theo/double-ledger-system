@@ -1,13 +1,12 @@
 package theo.bank.ledger.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -18,10 +17,20 @@ public class Accounts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int accountId;
-    String accountNo;
-    double balance;
-    String password;
-    int CustomerId;
-    String email;
+    private int accountId;
+
+    @Column(unique = true, nullable = false)
+    private String accountNo;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal balance;
+
+    private String password;
+
+    private int customerId;
+
+    private String email;
+
+    @Version
+    private Long version;
 }

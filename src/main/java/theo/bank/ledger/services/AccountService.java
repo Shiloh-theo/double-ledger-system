@@ -7,20 +7,22 @@ import theo.bank.ledger.models.Accounts;
 import theo.bank.ledger.models.Customers;
 import theo.bank.ledger.repositories.AccountRepository;
 
+import java.math.BigDecimal;
+
 @Service
 public class AccountService {
 
     @Autowired
     AccountRepository repository;
 
-    Accounts account = new Accounts();
+
 
     public Accounts createAccount(CustomerDto dto, Customers newCustomer) {
-        StringBuilder sb = new StringBuilder(dto.getPhone());
-        String phone = sb.deleteCharAt(0).toString();
+        String phone = dto.getPhone().substring(1);
 
+        Accounts account = new Accounts();
                 account.setAccountNo(phone);
-                account.setBalance(0.00);
+                account.setBalance(BigDecimal.ZERO);
                 account.setPassword(dto.getPassword());
                 account.setCustomerId(newCustomer.getCustomerId());
                 account.setEmail(dto.getEmail());

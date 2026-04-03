@@ -1,5 +1,6 @@
 package theo.bank.ledger.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,67 +11,64 @@ import theo.bank.ledger.models.Transactions;
 import theo.bank.ledger.repositories.AccountRepository;
 import theo.bank.ledger.repositories.TransactionRepository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Service
 public class TransactionService {
 
     @Autowired
-    TransactionRepository repository;
+    TransactionRepository transactionRepository;
 
     @Autowired
     AccountRepository accountRepository;
 
-//    @Autowired
-//    Accounts accounts;
+    @Transactional
+    public ResponseEntity<String> transfer(TransactionDto dto) {
 
-    public ResponseEntity<Transactions> credit(TransactionDto dto) {
+        // Step 1: Fetch both accounts
+        Accounts sender = accountRepository.findByAccountNo(dto.getDebitAccount());
+        Accounts receiver = accountRepository.findByAccountNo(dto.getCreditAccount());
 
-        Transactions transactions = new Transactions();
-//        transactions.setDate();
-//        transactions.setTime();
-        transactions.setReceiverAccount(dto.getCreditAccount());
-        transactions.setSenderAccount(dto.getDebitAccount());
-        transactions.setAmount(dto.getAmount());
-
-        repository.save(transactions);
-
-        Accounts accounts = accountRepository.findByAccountNo(dto.getCreditAccount());
-
-        accounts.setBalance(accounts.getBalance() + dto.getAmount());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactions);
-    }
-
-
-    public ResponseEntity<Transactions> debit(TransactionDto dto) {
-
-        Transactions transactions = new Transactions();
-        transactions.setSenderAccount(dto.getDebitAccount());
-        transactions.setReceiverAccount(dto.getCreditAccount());
-        transactions.setAmount(dto.getAmount());
-
-        repository.save(transactions);
-
-        Accounts debitAccount = accountRepository.findByAccountNo(dto.getDebitAccount());
-        if (debitAccount.getBalance() < dto.getAmount()){
-            throw new RuntimeException("Insufficient balance");
+        // Step 2: Validate both accounts exist
+        if (sender == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Sender account not found");
+        }
+        if (receiver == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Receiver account not found");
         }
 
-        debitAccount.setBalance(debitAccount.getBalance() - dto.getAmount());
+        // Step 3: Parse the transfer amount as BigDecimal
+        BigDecimal amount = dto.getAmount();
 
-        return ResponseEntity.status(HttpStatus.OK).body(transactions);
-    }
+        // Step 4: Check sender has enough funds
+        if (sender.getBalance().compareTo(amount) < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Insufficient funds");
+        }
 
-    public ResponseEntity<Transactions> transact(TransactionDto dto) {
-        Transactions transactions = new Transactions();
-        transactions.setReceiverAccount(dto.getCreditAccount());
-        transactions.setSenderAccount(dto.getDebitAccount());
-        transactions.setAmount(dto.getAmount());
+        // Step 5: Deduct from sender, credit to receiver
+        sender.setBalance(sender.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
 
-        repository.save(transactions);
+        // Step 6: Save both updated accounts
+        accountRepository.save(sender);
+        accountRepository.save(receiver);
 
-        Accounts debitAccount = accountRepository.findByAccountNo(dto.getDebitAccount());
-        Accounts creditAccount = accountRepository.findByAccountNo(dto.getCreditAccount());
+        // Step 7: Record the transaction in the ledger
+        Transactions record = new Transactions();
+        record.setSenderAccount(dto.getDebitAccount());
+        record.setReceiverAccount(dto.getCreditAccount());
+        record.setAmount(amount);
+        record.setDate(LocalDate.now());
+        record.setTime(LocalTime.now());
 
-        return null;
+        transactionRepository.save(record);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Transfer successful");
     }
 }
