@@ -12,7 +12,7 @@ public class CustomerDto {
     String name;
     String email;
     String phone;
-    int age;
+    Integer age;
     String password;
     String transactionPin;
 }
