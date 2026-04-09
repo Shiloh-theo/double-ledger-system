@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import theo.bank.ledger.dto.TransactionDto;
+import theo.bank.ledger.dto.TransactionHistoryDto;
 import theo.bank.ledger.models.Accounts;
 import theo.bank.ledger.models.Transactions;
 import theo.bank.ledger.repositories.AccountRepository;
@@ -14,6 +15,8 @@ import theo.bank.ledger.repositories.TransactionRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TransactionService {
@@ -70,5 +73,37 @@ public class TransactionService {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body("Transfer successful");
+    }
+
+    public List<TransactionHistoryDto> getTransactionHistory(String accountNo) {
+
+        List<Transactions> transactions =
+                transactionRepository.findBySenderAccountOrReceiverAccount(accountNo, accountNo);
+
+        List<TransactionHistoryDto> history = new ArrayList<>();
+
+        for (Transactions tx : transactions) {
+
+            String type;
+
+            if (tx.getSenderAccount().equals(accountNo)) {
+                type = "DEBIT";
+            } else {
+                type = "CREDIT";
+            }
+
+            TransactionHistoryDto dto = new TransactionHistoryDto(
+                    tx.getSenderAccount(),
+                    tx.getReceiverAccount(),
+                    tx.getAmount(),
+                    tx.getDate(),
+                    tx.getTime(),
+                    type
+            );
+
+            history.add(dto);
+        }
+
+        return history;
     }
 }

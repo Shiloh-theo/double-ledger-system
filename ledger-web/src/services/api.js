@@ -4,10 +4,15 @@ const api = axios.create({
     baseURL: 'http://localhost:8080/bank',
 });
 
+let authToken = null;
+
+export function setAuthToken(token) {
+    authToken = token;
+}
+
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (authToken) {
+        config.headers.Authorization = `Bearer ${authToken}`;
     }
     return config;
 });

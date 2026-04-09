@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import { setAuthToken } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -6,14 +7,16 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
 
-    const login = (email, jwt) => {
-        setToken(jwt);
-        setUser(email);
+    const login = (email, token) => {
+        setToken(token);
+        setUser({ email });
+        setAuthToken(token);
     };
 
     const logout = () => {
         setToken(null);
         setUser(null);
+        setAuthToken(null);
     };
 
     return (
