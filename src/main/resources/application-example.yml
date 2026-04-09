@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ledger_db
+    url: jdbc:postgresql://localhost:5432/your_db
     username: your_db_username
     password: your_db_password
 
