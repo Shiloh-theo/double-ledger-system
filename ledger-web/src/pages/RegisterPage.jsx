@@ -27,7 +27,7 @@ function RegisterPage() {
         try {
             // Fix 1: correct endpoint path is /bank/register
             // Fix 2: parse age to integer so it matches backend Integer type
-            await api.post('/bank/register', {
+            await api.post('/register', {
                 ...formData,
                 age: parseInt(formData.age, 10)
             })
