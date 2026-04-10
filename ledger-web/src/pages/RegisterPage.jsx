@@ -4,14 +4,14 @@ import api from '../services/api'
 
 function RegisterPage() {
     const navigate = useNavigate()
-const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    age: '',
-    password: '',
-    transactionPin: ''
-})
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        age: '',
+        password: '',
+        transactionPin: ''
+    })
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
 
@@ -25,10 +25,16 @@ const [formData, setFormData] = useState({
         setError(null)
 
         try {
-            await api.post('/register', formData)
+            // Fix 1: correct endpoint path is /bank/register
+            // Fix 2: parse age to integer so it matches backend Integer type
+            await api.post('/bank/register', {
+                ...formData,
+                age: parseInt(formData.age, 10)
+            })
             navigate('/login')
         } catch (err) {
             setError('Registration failed. Please try again.')
+            console.error('Registration error:', err.response?.status, err.response?.data)
         } finally {
             setLoading(false)
         }
