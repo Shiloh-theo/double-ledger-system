@@ -11,7 +11,7 @@ import theo.bank.ledger.security.JwtUtil;
 import theo.bank.ledger.services.AccountService;
 
 @RestController
-@RequestMapping(path = "bank")
+//@RequestMapping()
 public class AccountController {
 
     @Autowired
@@ -36,7 +36,7 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @PostMapping("createAccount")
+    @PostMapping("register")
     public Accounts createAccount(@RequestBody CustomerDto dto, Customers customer){
         return service.createAccount(dto, customer);
     }
