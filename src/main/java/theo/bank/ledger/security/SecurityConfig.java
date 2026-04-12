@@ -21,9 +21,6 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -43,9 +40,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // permit both with and without /bank prefix to be safe
-                        .requestMatchers("/bank/register", "/bank/login",
-                                         "/register", "/login").permitAll()
+                        .requestMatchers("/login", "/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

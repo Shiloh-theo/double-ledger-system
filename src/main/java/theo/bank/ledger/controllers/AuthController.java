@@ -11,7 +11,6 @@ import theo.bank.ledger.security.JwtUtil;
 import theo.bank.ledger.dto.LoginDto;
 
 @RestController
-@RequestMapping("bank")
 public class AuthController {
 
     @Autowired
@@ -23,7 +22,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDto dto) {
         Accounts account = accountRepository.findByEmail(dto.getEmail());
 

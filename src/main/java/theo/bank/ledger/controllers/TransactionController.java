@@ -13,7 +13,6 @@ import theo.bank.ledger.services.TransactionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("bank")
 public class TransactionController {
 
     @Autowired
@@ -25,12 +24,12 @@ public class TransactionController {
     @Autowired
     AccountService accountService;
 
-    @PostMapping("transfer")
+    @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@RequestBody TransactionDto dto) {
         return service.transfer(dto);
     }
 
-    @GetMapping("transactions")
+    @GetMapping("/transactions")
     public ResponseEntity<List<TransactionHistoryDto>> getTransactions(
             @RequestHeader("Authorization") String authHeader) {
 
