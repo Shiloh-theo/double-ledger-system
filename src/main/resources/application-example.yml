@@ -13,5 +13,6 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-server:
-  port: 8080
+# Do NOT hardcode server.port here.
+# The Dockerfile passes --server.port=${PORT:-10000} at runtime,
+# which lets Render inject its PORT env var automatically.
